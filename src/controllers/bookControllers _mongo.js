@@ -1,17 +1,14 @@
-const {db}=require('../firebase')
+const bookModel = require("../models/bookModel")
 
 const bookControllers = {
-  getBooks: async(req,res)=>{
-    const querySnapshot = await db.collection('users').get()
-    console.log(querySnapshot.docs[0].data())
-    const users =[]
-
-    querySnapshot.docs.map(doc=>{
-      console.log(doc.id)
-      console.log(doc.data())
-      users.push({ id:doc.id, ...doc.data()})
-    })
-    res.json(users)
+  getBooks: (req, res) => {
+    bookModel.find()
+      .then(data => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
   },
   getBook: (req, res) => {
     const id = req.params.id
