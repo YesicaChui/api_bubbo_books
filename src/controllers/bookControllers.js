@@ -1,15 +1,15 @@
-const {db}=require('../firebase')
-
+const { db } = require('../firebase')
+const bookCollection = db.collection('books')
 const bookControllers = {
-  getBooks: async(req,res)=>{
-    const querySnapshot = await db.collection('users').get()
+  getBooks: async (req, res) => {
+    const querySnapshot = await bookCollection.get()
     console.log(querySnapshot.docs[0].data())
-    const users =[]
+    const users = []
 
-    querySnapshot.docs.map(doc=>{
+    querySnapshot.docs.map(doc => {
       console.log(doc.id)
       console.log(doc.data())
-      users.push({ id:doc.id, ...doc.data()})
+      users.push({ id: doc.id, ...doc.data() })
     })
     res.json(users)
   },
@@ -23,15 +23,14 @@ const bookControllers = {
         res.json({ mensaje: error })
       })
   },
-  createBook: (req, res) => {
-    const book = bookModel(req.body)
-    book.save()
-      .then((data) => {
-        res.json(data)
-      })
-      .catch(error => {
-        res.json({ mensaje: error })
-      })
+  createBook: async (req, res) => {
+    const book = req.body
+
+    const docRef = await bookCollection.add(book)
+    const newBook = await docRef.get()
+    console.log(newBook.id)
+    res.json({id:newBook.id,...newBook.data()})
+
 
   },
   updateBook: (req, res) => {
