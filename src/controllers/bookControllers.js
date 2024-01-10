@@ -52,15 +52,15 @@ const bookControllers = {
     res.json({ mensaje: "Libro Actualizado" })
 
   },
-  deleteBook: (req, res) => {
+  deleteBook: async(req, res) => {
     const id = req.params.id
-    bookModel.deleteOne({ _id: id })
-      .then((data) => {
-        res.json(data)
-      })
-      .catch(error => {
-        res.json({ mensaje: error })
-      })
+    const bookDoc = await bookCollection.doc(id).get()
+    if (!bookDoc.exists) {
+      res.status(404).json({ mensaje: "Libro no Encontrado" })
+      return
+    }
+    await bookCollection.doc(id).delete()
+    res.json({mensaje:"Libro Eliminado"})
   },
 }
 module.exports = bookControllers
