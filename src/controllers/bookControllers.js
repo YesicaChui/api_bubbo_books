@@ -36,21 +36,15 @@ const bookControllers = {
   },
   updateBook: async (req, res) => {
     const id = req.params.id
-    const { title, author, year } = req.body
+    const dataBody = req.body
     const bookDoc = await bookCollection.doc(id).get()
     if (!bookDoc.exists) {
       res.status(404).json({ mensaje: "Libro no Encontrado" })
       return
     }
-    const updateData={}
-    if(title!=undefined) updateData.title=title
-    if(author!=undefined) updateData.author=author
-    if(year!=undefined) updateData.year=year
-
-    await bookCollection.doc(id).update(updateData)
-
+    
+    await bookCollection.doc(id).update(dataBody)
     res.json({ mensaje: "Libro Actualizado" })
-
   },
   deleteBook: async(req, res) => {
     const id = req.params.id
