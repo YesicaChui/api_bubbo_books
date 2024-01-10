@@ -13,15 +13,15 @@ const bookControllers = {
     })
     res.json(users)
   },
-  getBook: (req, res) => {
+  getBook: async(req, res) => {
     const id = req.params.id
-    bookModel.findById(id)
-      .then(data => {
-        res.json(data)
-      })
-      .catch(error => {
-        res.json({ mensaje: error })
-      })
+    const bookDoc = await bookCollection.doc(id).get()
+    if(!bookDoc.exists){
+      res.status(404).json({mensaje:"Libro no Encontrado"})
+      return
+    }
+    res.json({id:bookDoc.id,...bookDoc.data()})
+  
   },
   createBook: async (req, res) => {
     const book = req.body
