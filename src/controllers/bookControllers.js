@@ -6,7 +6,6 @@ const bookControllers = {
     const querySnapshot = await bookCollection.get()
     console.log(querySnapshot.docs[0].data())
     const users = []
-
     querySnapshot.docs.map(doc => {
       console.log(doc.id)
       console.log(doc.data())
@@ -26,13 +25,10 @@ const bookControllers = {
   },
   createBook: async (req, res) => {
     const book = req.body
-
     const docRef = await bookCollection.add(book)
     const newBook = await docRef.get()
     console.log(newBook.id)
     res.json({ id: newBook.id, ...newBook.data() })
-
-
   },
   updateBook: async (req, res) => {
     const id = req.params.id
@@ -42,11 +38,11 @@ const bookControllers = {
       res.status(404).json({ mensaje: "Libro no Encontrado" })
       return
     }
-    
+
     await bookCollection.doc(id).update(dataBody)
     res.json({ mensaje: "Libro Actualizado" })
   },
-  deleteBook: async(req, res) => {
+  deleteBook: async (req, res) => {
     const id = req.params.id
     const bookDoc = await bookCollection.doc(id).get()
     if (!bookDoc.exists) {
@@ -54,7 +50,7 @@ const bookControllers = {
       return
     }
     await bookCollection.doc(id).delete()
-    res.json({mensaje:"Libro Eliminado"})
+    res.json({ mensaje: "Libro Eliminado" })
   },
 }
 module.exports = bookControllers
