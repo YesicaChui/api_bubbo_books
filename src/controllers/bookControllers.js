@@ -1,4 +1,5 @@
 const { db } = require('../firebase')
+const { merge } = require('../routes/bookRoutes')
 const bookCollection = db.collection('books')
 const bookControllers = {
   getBooks: async (req, res) => {
@@ -13,15 +14,15 @@ const bookControllers = {
     })
     res.json(users)
   },
-  getBook: async(req, res) => {
+  getBook: async (req, res) => {
     const id = req.params.id
     const bookDoc = await bookCollection.doc(id).get()
-    if(!bookDoc.exists){
-      res.status(404).json({mensaje:"Libro no Encontrado"})
+    if (!bookDoc.exists) {
+      res.status(404).json({ mensaje: "Libro no Encontrado" })
       return
     }
-    res.json({id:bookDoc.id,...bookDoc.data()})
-  
+    res.json({ id: bookDoc.id, ...bookDoc.data() })
+
   },
   createBook: async (req, res) => {
     const book = req.body
@@ -29,20 +30,27 @@ const bookControllers = {
     const docRef = await bookCollection.add(book)
     const newBook = await docRef.get()
     console.log(newBook.id)
-    res.json({id:newBook.id,...newBook.data()})
+    res.json({ id: newBook.id, ...newBook.data() })
 
 
   },
-  updateBook: (req, res) => {
+  updateBook: async (req, res) => {
     const id = req.params.id
     const { title, author, year } = req.body
-    bookModel.updateOne({ _id: id }, { $set: { title, author, year } })
-      .then((data) => {
-        res.json(data)
-      })
-      .catch(error => {
-        res.json({ mensaje: error })
-      })
+    const bookDoc = await bookCollection.doc(id).get()
+    if (!bookDoc.exists) {
+      res.status(404).json({ mensaje: "Libro no Encontrado" })
+      return
+    }
+    const updateData={}
+    if(title!=undefined) updateData.title=title
+    if(author!=undefined) updateData.author=author
+    if(year!=undefined) updateData.year=year
+
+    await bookCollection.doc(id).update(updateData)
+
+    res.json({ mensaje: "Libro Actualizado" })
+
   },
   deleteBook: (req, res) => {
     const id = req.params.id
