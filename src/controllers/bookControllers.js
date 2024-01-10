@@ -1,19 +1,56 @@
+const bookModel = require("../models/bookModel")
+
 const bookControllers = {
   getBooks: (req, res) => {
-   res.send("leyendo libros")
+    bookModel.find()
+      .then(data => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
   },
   getBook: (req, res) => {
-    res.send("leyendo libro")
+    const id = req.params.id
+    bookModel.findById(id)
+      .then(data => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
   },
   createBook: (req, res) => {
-   res.send("Insertando libro")
+    const book = bookModel(req.body)
+    book.save()
+      .then((data) => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
 
   },
   updateBook: (req, res) => {
-    res.send("actualizando libro")
+    const id = req.params.id
+    const { title, author, year } = req.body
+    bookModel.updateOne({ _id: id }, { $set: { title, author, year } })
+      .then((data) => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
   },
   deleteBook: (req, res) => {
-    res.send("borrando libro")
+    const id = req.params.id
+    bookModel.deleteOne({ _id: id })
+      .then((data) => {
+        res.json(data)
+      })
+      .catch(error => {
+        res.json({ mensaje: error })
+      })
   },
 }
 module.exports = bookControllers
